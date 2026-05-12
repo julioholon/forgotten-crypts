@@ -556,7 +556,7 @@ export class GamePlayScene extends Phaser.Scene {
         this.playerSprite.x = prevPx;
         this.playerSprite.y = prevPy;
 
-        this.inputManager.lock(() => {
+        this.inputManager.lock((unlock) => {
             this.tweens.add({
                 targets: this.playerSprite,
                 x: targetPx,
@@ -564,6 +564,7 @@ export class GamePlayScene extends Phaser.Scene {
                 duration: 100,
                 ease: 'Power1',
                 onComplete: () => {
+                    unlock();
                     if (onComplete) onComplete();
                 }
             });
