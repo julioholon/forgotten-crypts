@@ -519,11 +519,15 @@ export class GamePlayScene extends Phaser.Scene {
             this.stateManager.moves++;
 
             // Animate both box and player
-            this.animateMove(player, prevX, prevY, dir.dx, dir.dy, () => {
-                // Animate box after player starts moving
-                this.animateBoxMove(box, targetX, targetY, dir.dx, dir.dy, () => {
-                    this.checkWin();
-                });
+            // Lock input for the entire box push sequence
+            this.inputManager.lock((unlock) => {
+                this.animateMove(player, prevX, prevY, dir.dx, dir.dy, () => {
+                    // Animate box after player starts moving
+                    this.animateBoxMove(box, targetX, targetY, dir.dx, dir.dy, () => {
+                        unlock(); // Unlock only when box animation completes
+                        this.checkWin();
+                    });
+                }, true); // true = skipLocking flag
             });
 
         } else {
@@ -547,7 +551,7 @@ export class GamePlayScene extends Phaser.Scene {
     }
 
     /** Smooth tween animation for player movement */
-    animateMove(player, prevX, prevY, dx, dy, onComplete) {
+    animateMove(player, prevX, prevY, dx, dy, onComplete, skipLocking = false) {
         const targetPx = this.gridOffsetX + player.x * this.tileSize + this.tileSize / 2;
         const targetPy = this.gridOffsetY + player.y * this.tileSize + this.tileSize / 2;
         const prevPx = this.gridOffsetX + prevX * this.tileSize + this.tileSize / 2;
@@ -556,7 +560,8 @@ export class GamePlayScene extends Phaser.Scene {
         this.playerSprite.x = prevPx;
         this.playerSprite.y = prevPy;
 
-        this.inputManager.lock((unlock) => {
+        if (skipLocking) {
+            // Don't manage locking - caller handles it
             this.tweens.add({
                 targets: this.playerSprite,
                 x: targetPx,
@@ -564,11 +569,25 @@ export class GamePlayScene extends Phaser.Scene {
                 duration: 100,
                 ease: 'Power1',
                 onComplete: () => {
-                    unlock();
                     if (onComplete) onComplete();
                 }
             });
-        });
+        } else {
+            // Normal behavior: manage locking
+            this.inputManager.lock((unlock) => {
+                this.tweens.add({
+                    targets: this.playerSprite,
+                    x: targetPx,
+                    y: targetPy,
+                    duration: 100,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        unlock();
+                        if (onComplete) onComplete();
+                    }
+                });
+            });
+        }
     }
 
     /** Smooth tween animation for box movement */
