@@ -166,7 +166,7 @@ export class GamePlayScene extends Phaser.Scene {
         });
 
         // Detect mobile and show D-Pad
-        if (Phaser.Input.Touch.exists()) {
+        if (this.sys.game.device.input.touch) {
             this.inputManager.setDpadVisible(true);
         }
 
