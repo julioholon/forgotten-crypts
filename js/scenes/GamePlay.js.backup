@@ -223,28 +223,18 @@ export class GamePlayScene extends Phaser.Scene {
                         hasTarget ? 'tile_target' : 'tile_floor');
                     img.setDisplaySize(this.tileSize, this.tileSize);
 
-                    // Draw crosshair and pulse for targets
+                    // Draw crosshair for targets
                     if (hasTarget) {
+                        const g = this.add.graphics();
                         const cx = px + this.tileSize / 2;
                         const cy = py + this.tileSize / 2;
                         const s = this.tileSize * 0.15;
-                        
-                        // Crosshair lines
-                        const crosshair = this.add.graphics();
-                        crosshair.lineStyle(1, 0x44ffcc, 0.8);
-                        crosshair.lineBetween(cx - s, cy, cx + s, cy);
-                        crosshair.lineBetween(cx, cy - s, cx, cy + s);
-                        crosshair.setDepth(1);
-                        
-                        // Pulse tween for the target image
-                        this.tweens.add({
-                            targets: img,
-                            alpha: 0.6,
-                            duration: 800,
-                            yoyo: true,
-                            repeat: -1,
-                            ease: 'Sine.easeInOut'
-                        });
+                        g.lineStyle(1, 0x886633, 0.6);
+                        g.lineBetween(cx - s, cy, cx + s, cy);
+                        g.lineBetween(cx, cy - s, cx, cy + s);
+                        g.lineBetween(cx - s, cy - s, cx + s, cy + s);
+                        g.lineBetween(cx + s, cy - s, cx - s, cy + s);
+                        g.setDepth(-1);
                     }
                 }
             }
@@ -293,12 +283,10 @@ export class GamePlayScene extends Phaser.Scene {
             g.lineStyle(1, 0x252530, 0.5);
             g.strokeRect(1, 1, ts - 2, ts - 2);
             // Glow circle
-            g.lineStyle(3, 0x44ffcc, 1);
-            g.strokeCircle(ts / 2, ts / 2, ts * 0.3);
-            g.fillStyle(0x44ffcc, 0.3);
-            g.fillCircle(ts / 2, ts / 2, ts * 0.3);
-            g.lineStyle(1, 0x44ffcc, 0.5);
-            g.strokeCircle(ts / 2, ts / 2, ts * 0.4);
+            g.lineStyle(2, 0x665522, 0.5);
+            g.fillCircle(ts / 2, ts / 2, ts * 0.25);
+            g.lineStyle(1, 0x665522, 0.3);
+            g.strokeCircle(ts / 2, ts / 2, ts * 0.25);
         });
     }
 
@@ -531,15 +519,11 @@ export class GamePlayScene extends Phaser.Scene {
             this.stateManager.moves++;
 
             // Animate both box and player
-            // Lock input for the entire box push sequence
-            this.inputManager.lock((unlock) => {
-                this.animateMove(player, prevX, prevY, dir.dx, dir.dy, () => {
-                    // Animate box after player starts moving
-                    this.animateBoxMove(box, targetX, targetY, dir.dx, dir.dy, () => {
-                        unlock(); // Unlock only when box animation completes
-                        this.checkWin();
-                    });
-                }, true); // true = skipLocking flag
+            this.animateMove(player, prevX, prevY, dir.dx, dir.dy, () => {
+                // Animate box after player starts moving
+                this.animateBoxMove(box, targetX, targetY, dir.dx, dir.dy, () => {
+                    this.checkWin();
+                });
             });
 
         } else {
@@ -563,7 +547,7 @@ export class GamePlayScene extends Phaser.Scene {
     }
 
     /** Smooth tween animation for player movement */
-    animateMove(player, prevX, prevY, dx, dy, onComplete, skipLocking = false) {
+    animateMove(player, prevX, prevY, dx, dy, onComplete) {
         const targetPx = this.gridOffsetX + player.x * this.tileSize + this.tileSize / 2;
         const targetPy = this.gridOffsetY + player.y * this.tileSize + this.tileSize / 2;
         const prevPx = this.gridOffsetX + prevX * this.tileSize + this.tileSize / 2;
@@ -572,8 +556,7 @@ export class GamePlayScene extends Phaser.Scene {
         this.playerSprite.x = prevPx;
         this.playerSprite.y = prevPy;
 
-        if (skipLocking) {
-            // Don't manage locking - caller handles it
+        this.inputManager.lock((unlock) => {
             this.tweens.add({
                 targets: this.playerSprite,
                 x: targetPx,
@@ -581,25 +564,11 @@ export class GamePlayScene extends Phaser.Scene {
                 duration: 100,
                 ease: 'Power1',
                 onComplete: () => {
+                    unlock();
                     if (onComplete) onComplete();
                 }
             });
-        } else {
-            // Normal behavior: manage locking
-            this.inputManager.lock((unlock) => {
-                this.tweens.add({
-                    targets: this.playerSprite,
-                    x: targetPx,
-                    y: targetPy,
-                    duration: 100,
-                    ease: 'Power1',
-                    onComplete: () => {
-                        unlock();
-                        if (onComplete) onComplete();
-                    }
-                });
-            });
-        }
+        });
     }
 
     /** Smooth tween animation for box movement */
@@ -762,9 +731,10 @@ export class GamePlayScene extends Phaser.Scene {
 
         overlay.add(lsBtn);
 
-        // Flash effect - use a temporary overlay instead of camera fade
+        // Flash effect
         const flash = this.add.rectangle(0, 0, width, height, 0xd4a840, 0)
             .setOrigin(0).setDepth(199);
+        this.cameras.main.fadeOut(400, 0, 0, 0);
 
         this.tweens.add({
             targets: flash,
