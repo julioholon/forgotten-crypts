@@ -750,10 +750,9 @@ export class GamePlayScene extends Phaser.Scene {
 
         overlay.add(lsBtn);
 
-        // Flash effect
+        // Flash effect - use a temporary overlay instead of camera fade
         const flash = this.add.rectangle(0, 0, width, height, 0xd4a840, 0)
             .setOrigin(0).setDepth(199);
-        this.cameras.main.fadeOut(400, 0, 0, 0);
 
         this.tweens.add({
             targets: flash,
