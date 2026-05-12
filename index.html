@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Medieval Sokoban Dungeon Crawler - Push treasure chests onto altars to escape the forgotten crypts.">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Forgotten Crypts — Medieval Sokoban</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Phaser 3.87 from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.87.0/dist/phaser.min.js"></script>
+</head>
+<body>
+    <div id="game-container"></div>
+    <!-- Load game via ES6 module pattern -->
+    <script type="module">
+        import { createGame } from './js/game.js';
+        createGame('game-container');
+    </script>
+</body>
+</html>

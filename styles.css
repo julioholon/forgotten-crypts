@@ -1,0 +1,214 @@
+/* ==========================================================
+   Forgotten Crypts — Medieval Sokoban
+   Responsive layout styles
+   ========================================================== */
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0d0d1a;
+    font-family: 'Courier New', Courier, monospace;
+    color: #e0d8c0;
+    touch-action: none;           /* prevent browser gestures */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Game Container ---------- */
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---------- Mobile HUD overlay ---------- */
+/* (Phaser canvas fills the viewport; these styles apply
+   to any HTML overlays we may add via scene.add.dom) */
+
+.hud-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(13, 13, 26, 0.85);
+    border-bottom: 1px solid #2a2a4a;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.hud-bar button {
+    background: #2a2a4a;
+    color: #e0d8c0;
+    border: 1px solid #3a3a5a;
+    padding: 6px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.hud-bar button:hover,
+.hud-bar button:focus {
+    background: #3a3a5a;
+    outline: none;
+}
+
+.hud-stat {
+    font-size: 13px;
+    color: #a89060;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- D-Pad (mobile touch controls) ---------- */
+.dpad {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 160px;
+    height: 160px;
+    z-index: 100;
+    display: none;                /* shown via JS on touch devices */
+}
+
+.dpad-visible {
+    display: block !important;
+}
+
+.dpad-btn {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: rgba(42, 42, 74, 0.75);
+    border: 1px solid rgba(100, 100, 150, 0.5);
+    border-radius: 8px;
+    color: #c0b890;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.dpad-btn:active {
+    background: rgba(70, 70, 110, 0.9);
+}
+
+.dpad-up    { top: 0;    left: 55px; }
+.dpad-down  { bottom: 0; left: 55px; }
+.dpad-left  { top: 55px; left: 0;    }
+.dpad-right { top: 55px; right: 0;   }
+.dpad-undo  { top: 0;    left: 0;    font-size: 12px; width: 50px; }
+.dpad-restart { bottom: 0; right: 0; font-size: 12px; width: 50px; }
+
+/* ---------- Level Select grid ---------- */
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    padding: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.level-btn {
+    aspect-ratio: 1;
+    background: #1a1a2e;
+    border: 2px solid #2a2a4a;
+    border-radius: 8px;
+    color: #a89060;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, transform 0.1s;
+}
+
+.level-btn:hover, .level-btn:focus {
+    border-color: #5a5a8a;
+    transform: scale(1.05);
+    outline: none;
+}
+
+.level-btn.completed {
+    border-color: #4a8a4a;
+    color: #6a6;
+}
+
+.level-btn.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.level-btn .level-name {
+    font-size: 9px;
+    color: #888;
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* ---------- Victory overlay ---------- */
+.victory-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.victory-overlay.visible {
+    opacity: 1;
+}
+
+.victory-panel {
+    background: #1a1a2e;
+    border: 2px solid #5a5a3a;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.victory-panel h2 {
+    color: #d4a840;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.victory-stats {
+    color: #a89060;
+    font-size: 15px;
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+    .hud-bar { font-size: 11px; padding: 6px 10px; }
+    .level-grid { grid-template-columns: repeat(3, 1fr); padding: 10px; }
+    .level-btn { font-size: 18px; }
+}
