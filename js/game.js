@@ -54,31 +54,14 @@ export function createGame(containerId) {
     // Create the Phaser game instance
     const game = new Phaser.Game(config);
 
-    // Attach managers to game registry for scene access
-    // Phaser 3.87+ allows custom properties on the game object
+    // Attach managers to the game instance for cross-scene access.
+    // Phaser 3 pattern: shared singletons are properties on the Game object,
+    // accessed from any scene as this.game.levelManager / this.game.stateManager.
     game.stateManager = stateManager;
     game.levelManager = levelManager;
 
     // Set total levels globally for scene access
     window.TOTAL_LEVELS = levelManager.totalLevels;
-
-    // Inject managers into scene config via Scene.initialize hook
-    // We override Scene.create to inject registries
-    const originalCreate = Phaser.Scene.prototype.create;
-    Phaser.Scene.prototype.create = function (...args) {
-        // Pass managers via registry if not already set
-        if (!this.registry.get('levelManager')) {
-            this.registry.set('levelManager', levelManager);
-        }
-        if (!this.registry.get('stateManager')) {
-            this.registry.set('stateManager', stateManager);
-        }
-
-        // Call original create if it exists
-        if (originalCreate) {
-            originalCreate.call(this, ...args);
-        }
-    };
 
     // Log startup
     console.log(`[Game] Started — ${levelManager.totalLevels} chambers loaded`);

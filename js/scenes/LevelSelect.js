@@ -32,9 +32,9 @@ export class LevelSelectScene extends Phaser.Scene {
         backBtn.on('pointerout', () => backBtn.setColor('#888'));
         backBtn.on('pointerdown', () => this.scene.start('MainMenu'));
 
-        // Get level data from the LevelManager passed via registry
-        const levelManager = this.registry.get('levelManager');
-        const stateManager = this.registry.get('stateManager');
+        // Get level data from shared managers on the game instance
+        const levelManager = this.game.levelManager;
+        const stateManager = this.game.stateManager;
         const allLevels = levelManager.getAllLevels();
 
         // Calculate grid layout

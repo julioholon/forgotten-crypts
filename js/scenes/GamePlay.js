@@ -47,8 +47,8 @@ export class GamePlayScene extends Phaser.Scene {
 
     init(data) {
         this.levelIndex = data.levelIndex || 0;
-        this.levelManager = this.registry.get('levelManager');
-        this.stateManager = this.registry.get('stateManager');
+        this.levelManager = this.game.levelManager;
+        this.stateManager = this.game.stateManager;
 
         // Load the level
         const levelDef = this.levelManager.loadLevel(this.levelIndex);
