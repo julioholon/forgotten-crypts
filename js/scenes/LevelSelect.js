@@ -79,14 +79,17 @@ export class LevelSelectScene extends Phaser.Scene {
             group.setSize(btnWidth, btnHeight + 20);
 
             if (isUnlocked) {
-                group.setInteractive({ useHandCursor: true });
-                group.on('pointerover', () => {
+                // Set interactive directly on the bg rectangle (a proper GameObject
+                // with a definite hit area) rather than on the Container which lacks
+                // auto hit-area detection in Phaser 3.
+                bg.setInteractive({ useHandCursor: true });
+                bg.on('pointerover', () => {
                     bg.setFillStyle(isCompleted ? 0x2a3a2a : 0x2a2a4a);
                 });
-                group.on('pointerout', () => {
+                bg.on('pointerout', () => {
                     bg.setFillStyle(isCompleted ? 0x1a2a1a : 0x1a1a2e);
                 });
-                group.on('pointerdown', () => {
+                bg.on('pointerdown', () => {
                     const level = levelManager.loadLevel(i);
                     if (level) {
                         this.scene.start('GamePlay', { levelIndex: i });
